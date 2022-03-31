@@ -1,0 +1,306 @@
+openapi: 3.0.1
+info:
+  title: Swagger Phones
+  description: API contract for Phones Challenge
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: luisfelipebergamim@gmail.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000
+tags:
+  - name: companies
+  - name: phones
+paths:
+  /companies:
+    post:
+      tags:
+        - companies
+      summary: Add a new company
+      requestBody:
+        description: Include a company name into the database
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Company"
+        required: true
+      responses:
+        201:
+          description: Created
+          content: {}
+        400:
+          description: Bad Request
+          content: {}
+        405:
+          description: Not Allowed
+          content: {}
+      security:
+        - bearerAuth: []
+      x-codegen-request-body-name: body
+    get:
+      tags:
+        - companies
+      summary: Retrieve a company list
+      parameters:
+        - name: name
+          in: query
+          description: Company Name
+          schema:
+            type: string
+            x-exportParamName: Username
+          x-exportParamName: Username
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CompanyID"
+        400:
+          description: Bad Request
+          content: {}
+        405:
+          description: Not Allowed
+          content: {}
+      security:
+        - bearerAuth: []
+  /companies/{id}:
+    get:
+      tags:
+        - companies
+      summary: Finds Company by ID
+      parameters:
+        - name: id
+          in: path
+          description: Company ID
+          required: true
+          schema:
+            type: integer
+            x-exportParamName: id
+          x-exportParamName: id
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CompanyID"
+        400:
+          description: Bad Request
+          content: {}
+        405:
+          description: Not Allowed
+          content: {}
+      security:
+        - bearerAuth: []
+    put:
+      tags:
+        - companies
+      summary: Update Company
+      parameters:
+        - name: id
+          in: path
+          description: Company ID
+          required: true
+          schema:
+            type: integer
+            x-exportParamName: id
+          x-exportParamName: id
+      requestBody:
+        description: Update company from the database
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Company"
+        required: true
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CompanyID"
+        400:
+          description: Bad Request
+          content: {}
+        405:
+          description: Not Allowed
+          content: {}
+      security:
+        - bearerAuth: []
+      x-codegen-request-body-name: body
+    delete:
+      tags:
+        - companies
+      summary: Delete Company
+      parameters:
+        - name: id
+          in: path
+          description: Company ID
+          required: true
+          schema:
+            type: integer
+            x-exportParamName: id
+          x-exportParamName: id
+      responses:
+        204:
+          description: No Content
+          content: {}
+        400:
+          description: Bad Request
+          content: {}
+        405:
+          description: Not Allowed
+          content: {}
+      security:
+        - bearerAuth: []
+  /companies/{id}/phones:
+    post:
+      tags:
+        - companies
+      summary: Bulk insert phones in a company
+      parameters:
+        - name: id
+          in: path
+          description: Company ID
+          required: true
+          schema:
+            type: integer
+            x-exportParamName: id
+          x-exportParamName: id
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                file:
+                  type: string
+                  description: The file to upload.
+                  format: binary
+      responses:
+        201:
+          description: File uploaded
+          content: {}
+        400:
+          description: Bad Request
+          content: {}
+        405:
+          description: Not Allowed
+          content: {}
+      security:
+        - bearerAuth: []
+  /companies/{id}/phone:
+    get:
+      tags:
+        - companies
+      summary: Retrieve a phone number from database
+      parameters:
+        - name: id
+          in: path
+          description: Company ID
+          required: true
+          schema:
+            type: integer
+            x-exportParamName: id
+          x-exportParamName: id
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CompanyIDPhone"
+        400:
+          description: Bad Request
+          content: {}
+        405:
+          description: Not Allowed
+          content: {}
+      security:
+        - bearerAuth: []
+  /phones:
+    get:
+      tags:
+        - phones
+      summary: Count hoy many phones per company
+      responses:
+        200:
+          description: Successful operation
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/ListPhones"
+        400:
+          description: Bad Request
+          content: {}
+        405:
+          description: Not Allowed
+          content: {}
+      security:
+        - bearerAuth: []
+components:
+  schemas:
+    Company:
+      required:
+        - name
+      type: object
+      properties:
+        name:
+          type: string
+          example: StarLink
+    CompanyID:
+      type: array
+      items:
+        required:
+          - id
+          - name
+        type: object
+        properties:
+          id:
+            type: integer
+            example: 1
+          name:
+            type: string
+            example: StarLink
+    CompanyIDPhone:
+      required:
+        - company_id
+        - id
+        - phone_number
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        company_id:
+          type: integer
+          example: 10
+        phone_number:
+          type: string
+          example: "40404587"
+    ListPhones:
+      type: array
+      items:
+        required:
+          - company_id
+          - id
+          - phone_number
+        type: object
+        properties:
+          id:
+            type: integer
+            example: 1
+          company_id:
+            type: integer
+            example: 10
+          phone_number:
+            type: string
+            example: "40404587"
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
